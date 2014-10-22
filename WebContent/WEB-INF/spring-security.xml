@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:b="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+                        http://www.springframework.org/schema/security 
+                        http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<!-- 这里定义的messageSource对象供spring security 框架输出异常信息 -->
+	<b:bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<b:property name="basename" value="classpath:messages_zh_CN" />
+	</b:bean>
+
+	<!-- 配置数据源 -->
+	<b:bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<b:property name="username" value="root" />
+		<b:property name="password" value="root" />
+		<b:property name="url"
+			value="jdbc:mysql://localhost:3306/phonelocation?useUnicode=true&amp;characterEncoding=utf8" />
+	</b:bean>
+
+	<!-- 对以下不使用安全验证 -->
+	<http pattern="/**/*.jpg" security="none" />
+	<http pattern="/**/*.png" security="none" />
+	<http pattern="/**/*.gif" security="none" />
+	<http pattern="/**/*.ico" security="none" />
+	<http pattern="/**/*.css" security="none" />
+	<http pattern="/**/*.js" security="none" />
+	<http pattern="/index.jsp" security="none" />
+	<http pattern="/login.jsp" security="none" />
+	<http pattern="/about.jsp" security="none" />
+	<http pattern="/changelog.jsp" security="none" />
+	<http pattern="/register.jsp" security="none" />
+	<http pattern="/register.do" security="none" />
+	<http pattern="/captcha-image" security="none" />
+	<http pattern="/phone" security="none" />
+	<http pattern="/auth" security="none" />
+
+	<!-- 开启默认的拦截器 -->
+	<http auto-config='true' access-denied-page="/403.jsp">
+
+		<!-- 允许访问的uri -->
+		<intercept-url pattern="/**" access="ROLE_USER" />
+
+		<!-- 登陆页面配置 -->
+		<form-login login-page="/login.jsp" default-target-url="/index.jsp"
+			authentication-failure-url="/login.jsp?error=true" />
+
+	</http>
+
+	<authentication-manager>
+		<authentication-provider>
+			<jdbc-user-service data-source-ref="dataSource" />
+			<!-- <user-service> <user name="user" password="123456" authorities="ROLE_USER" 
+				/> </user-service> -->
+		</authentication-provider>
+	</authentication-manager>
+
+</b:beans>
