@@ -10,22 +10,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.phonelocation.dao.UsersPhoneDao;
-import com.phonelocation.model.IPhone;
+import com.phonelocation.dao.LocationDao;
+import com.phonelocation.model.Location;
 
 @Controller
 public class UserPageController {
 
 	@Autowired
-	private UsersPhoneDao usersPhoneDao;
+	private LocationDao locationDao;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public ModelAndView listLocation() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder
 				.getContext().getAuthentication().getPrincipal();
 
-		Collection<IPhone> list = usersPhoneDao.findPhoneByUsername(userDetails
-				.getUsername());
+		Collection<Location> list = locationDao
+				.findLocationByUsername(userDetails.getUsername());
 		return new ModelAndView("list", "phonelist", list);
 	}
 

@@ -1,7 +1,6 @@
 package com.phonelocation.controller;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -14,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.phonelocation.dao.LocationDao;
 import com.phonelocation.model.IPhone;
+import com.phonelocation.model.Location;
 import com.phonelocation.model.Token;
 import com.phonelocation.repository.TokenRepository;
 
@@ -33,7 +32,7 @@ public class PhoneLocationController {
 
 	@RequestMapping(value = "/find/{name}", method = RequestMethod.GET)
 	public @ResponseBody IPhone findPhone(@PathVariable("name") String name) {
-		return locationDao.findByName(name);
+		return new IPhone(locationDao.findLocationByPhoneid(name));
 	}
 
 	@RequestMapping(value = "/phone", method = RequestMethod.POST)
@@ -54,26 +53,30 @@ public class PhoneLocationController {
 			}
 			return null;
 		}
-		IPhone iPhone = locationDao.findByName(location.getName());
+		Location iPhone = locationDao.findLocationByPhoneid(location.getName());
 		if (iPhone == null) {
-			locationDao.insert(location);
-		} else {
-			locationDao.update(location);
+			iPhone = new Location();
+			iPhone.setPhoneid(location.getName());
 		}
+		iPhone.setX(location.getX());
+		iPhone.setY(location.getY());
+		iPhone.setRadius(location.getRadius());
+		iPhone.setDate(location.getDate());
+		locationDao.saveOrUpdate(iPhone);
 		response.setStatus(200);
 		return location;
 	}
 
 	@RequestMapping(value = "/show/{name}", method = RequestMethod.GET)
 	public String showlocation(@PathVariable("name") String name, ModelMap model) {
-		IPhone location = locationDao.findByName(name);
+		Location location = locationDao.findLocationByPhoneid(name);
 		if (location == null) {
 			return "error";
 		}
 		model.addAttribute("x", location.getX());
 		model.addAttribute("y", location.getY());
 		model.addAttribute("radius", location.getRadius());
-		model.addAttribute("labeltext", location.getName());
+		model.addAttribute("labeltext", location.getPhoneid());
 		model.addAttribute("titletext", new Date(location.getDate()).toString());
 
 		return "show";

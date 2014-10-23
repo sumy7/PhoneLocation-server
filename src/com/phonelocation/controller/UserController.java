@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.code.kaptcha.Constants;
-import com.phonelocation.dao.AuthoritieDao;
+import com.phonelocation.dao.RolesDao;
 import com.phonelocation.dao.UserDao;
-import com.phonelocation.model.Authoritie;
-import com.phonelocation.model.User;
+import com.phonelocation.model.Roles;
+import com.phonelocation.model.Users;
 
 @Controller
 public class UserController {
@@ -22,13 +22,13 @@ public class UserController {
 	private UserDao userDao;
 
 	@Autowired
-	private AuthoritieDao authoritieDao;
+	private RolesDao rolesDao;
 
 	@RequestMapping(value = "/register.do", method = RequestMethod.GET)
-	public String toRegister(){
+	public String toRegister() {
 		return "register";
 	}
-	
+
 	@RequestMapping(value = "/register.do", method = RequestMethod.POST)
 	public String register(String j_username, String j_password,
 			String j_password_rep, String j_code, HttpServletRequest request,
@@ -49,17 +49,21 @@ public class UserController {
 			System.out.println("两次密码不同");
 			return "register";
 		}
-		User user = userDao.findByUsername(j_username);
+		Users user = userDao.findUserByUsername(j_username, true);
 		if (user != null) {
-			System.out.println("用户已存在");
+			System.out.println("用户已存在" + j_username + " " + user.getUsername());
 			return "register";
 		}
 
-		user = new User(j_username, j_password, 1);
-		Authoritie authoritie = new Authoritie(j_username, Authoritie.ROLE_USER);
-		userDao.insert(user);
-		authoritieDao.insert(authoritie);
+		user = new Users(j_username, j_password, 1);
+		user.setUsername(j_username);
+		user.setPassword(j_password);
+		user.setEnabled(1);
+		user.getRoles().add(rolesDao.findRolesByRolename(Roles.ROLE_USER));
+
+		userDao.saveOrUpdate(user);
+
 		System.out.println("新建用户");
-		return "";
+		return "index";
 	}
 }

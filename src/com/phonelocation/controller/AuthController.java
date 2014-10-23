@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.phonelocation.dao.LocationDao;
 import com.phonelocation.dao.UserDao;
-import com.phonelocation.dao.UsersPhoneDao;
+import com.phonelocation.model.Location;
 import com.phonelocation.model.Token;
-import com.phonelocation.model.User;
+import com.phonelocation.model.Users;
 import com.phonelocation.repository.TokenRepository;
 
 @Controller
@@ -29,7 +30,7 @@ public class AuthController {
 	private UserDao userDao;
 
 	@Autowired
-	private UsersPhoneDao usersPhoneDao;
+	private LocationDao locationDao;
 
 	@RequestMapping(value = "/auth", method = RequestMethod.POST)
 	public @ResponseBody Token auth(@RequestParam("username") String username,
@@ -40,7 +41,7 @@ public class AuthController {
 		System.out.println("username:" + username + " password:" + password
 				+ " phonename:" + name);
 
-		User user = userDao.findByUsername(username);
+		Users user = userDao.findUserByUsername(username, false);
 		if (user == null || !user.getPassword().equals(password)) {
 			try {
 				System.out.println("hehe");
@@ -55,7 +56,14 @@ public class AuthController {
 		Token token = new Token(name, tokenid, System.currentTimeMillis()
 				+ DEADLINE_TEN_MINIES);
 
-		usersPhoneDao.insert(username, name);
+		Location iphone = locationDao.findLocationByPhoneid(name);
+		if (iphone == null) {
+			iphone = new Location();
+			iphone.setPhoneid(name);
+			locationDao.saveOrUpdate(iphone);
+		}
+		user.getPhones().add(iphone);
+		userDao.saveOrUpdate(user);
 
 		token = tokenRepository.insert(token);
 		System.out.println("New Token:" + token.getOwner() + " <--> "

@@ -36,14 +36,14 @@
 				<c:forEach items="${phonelist}" var="phone" varStatus="status">
 					<tr>
 						<td><c:out value="${status.count}" /></td>
-						<td><c:out value="${phone.name}" /></td>
+						<td><c:out value="${phone.phoneid}" /></td>
 						<td><c:out value="${phone.x}" /></td>
 						<td><c:out value="${phone.y}" /></td>
 						<td><c:out value="${phone.radius}" /></td>
 						<td><c:out value="${phone.date}" /></td>
 						<td><button class="btn btn-info" role="button"
 								data-toggle="modal" data-target="#mapModal"
-								onclick="showMap('${phone.name}')">地图</button></td>
+								onclick="showMap('${phone.phoneid}')">地图</button></td>
 					</tr>
 				</c:forEach>
 			</tbody>

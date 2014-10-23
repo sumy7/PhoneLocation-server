@@ -1,6 +1,5 @@
 package com.phonelocation.model;
 
-
 public class IPhone {
 
 	private String name;
@@ -18,6 +17,14 @@ public class IPhone {
 		this.y = y;
 		this.radius = radius;
 		this.date = date;
+	}
+
+	public IPhone(Location location) {
+		this.name = location.getPhoneid();
+		this.x = location.getX();
+		this.y = location.getY();
+		this.radius = location.getRadius();
+		this.date = location.getDate();
 	}
 
 	public String getName() {
