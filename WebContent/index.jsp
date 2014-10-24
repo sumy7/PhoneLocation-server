@@ -19,12 +19,22 @@
 <body>
 	<jsp:include page="navbar.jsp" />
 	<div class="container">
-
-		<div class="starter-template">
-			<h1>Hello World</h1>
-			<p class="lead">这里还没想好写什么，到时候再添加吧。</p>
+		<div class="jumbotron">
+			<div class="row featurette">
+				<div class="col-md-7">
+					<h1 class="featurette-heading">开始吧！</h1>
+					<p class="lead">扫描二维码，或点击按钮下载客户端。快来享受服务吧！</p>
+					<p>
+						<a class="btn btn-primary btn-lg" role="button"
+							href="phonelocation.apk">下载客户端到电脑</a>
+					</p>
+				</div>
+				<div class="col-md-5">
+					<img class="featurette-image img-responsive" src="img/qrcode.png"
+						alt="Generic placeholder image">
+				</div>
+			</div>
 		</div>
-
 	</div>
 	<!-- /.container -->
 </body>

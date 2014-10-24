@@ -84,7 +84,7 @@
 						<prop key="kaptcha.border.color">105,179,90</prop>
 						<prop key="kaptcha.textproducer.font.color">blue</prop>
 						<prop key="kaptcha.image.width">125</prop>
-						<prop key="kaptcha.image.height">40</prop>
+						<prop key="kaptcha.image.height">45</prop>
 						<prop key="kaptcha.textproducer.font.size">35</prop>
 						<prop key="kaptcha.session.key">code</prop>
 						<prop key="kaptcha.textproducer.char.length">4</prop>
@@ -108,6 +108,8 @@
 	<mvc:resources location="/css/" mapping="/css/**" />
 	<mvc:resources location="/js/" mapping="/js/**" />
 	<mvc:resources location="/fonts/" mapping="/fonts/**" />
+	<mvc:resources location="/img/" mapping="/img/**" />
+	<mvc:resources location="/phonelocation.apk" mapping="/phonelocation.apk" />
 
 	<mvc:annotation-driven>
 		<mvc:message-converters>

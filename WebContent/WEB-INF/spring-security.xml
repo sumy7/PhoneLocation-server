@@ -19,7 +19,6 @@
 
 	<b:bean id="customUserDetailsService" class="com.phonelocation.service.CustomUserDetailsService" />
 
-
 	<!-- 对以下不使用安全验证 -->
 	<http pattern="/**/*.jpg" security="none" />
 	<http pattern="/**/*.png" security="none" />
@@ -36,9 +35,10 @@
 	<http pattern="/captcha-image" security="none" />
 	<http pattern="/phone" security="none" />
 	<http pattern="/auth" security="none" />
+	<http pattern="/phonelocation.apk" security="none" />
 
 	<!-- 开启默认的拦截器 -->
-	<http auto-config='true' access-denied-page="/403.jsp">
+	<http auto-config="true" access-denied-page="/403.jsp">
 
 		<!-- 允许访问的uri -->
 		<intercept-url pattern="/**" access="ROLE_USER" />
@@ -47,20 +47,18 @@
 		<form-login login-page="/login.jsp" default-target-url="/index.jsp"
 			authentication-failure-url="/login.jsp?error=true" />
 
+		<remember-me data-source-ref="dataSource"
+			token-validity-seconds="1209600" remember-me-parameter="remember-me" />
+		<logout invalidate-session="true" logout-success-url="/"
+			logout-url="/logout" />
+
 	</http>
 
-	<authentication-manager>
+	<authentication-manager erase-credentials="false">
 		<authentication-provider user-service-ref="customUserDetailsService">
 			<password-encoder hash="plaintext">
 			</password-encoder>
 		</authentication-provider>
 	</authentication-manager>
-
-
-	<!-- <authentication-manager> -->
-	<!-- <authentication-provider> -->
-	<!-- <jdbc-user-service data-source-ref="dataSource" /> -->
-	<!-- </authentication-provider> -->
-	<!-- </authentication-manager> -->
 
 </b:beans>

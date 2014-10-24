@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,7 +8,6 @@
 <title>登录</title>
 <jsp:include page="head.jsp" />
 <style type="text/css">
-
 .form-signin {
 	max-width: 330px;
 	padding: 15px;
@@ -50,8 +50,17 @@
 </style>
 </head>
 <body>
-<jsp:include page="navbar.jsp" />
-	${sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message}
+	<jsp:include page="navbar.jsp" />
+	<c:if test="${param.error}">
+		<div class="container">
+			<br />
+			<div class="alert alert-warning alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				${sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message}
+			</div>
+	</c:if>
 	<div class="container">
 		<form class="form-signin" role="form" action="j_spring_security_check"
 			method="post">
@@ -59,7 +68,12 @@
 			<input type="text" class="form-control" name="j_username"
 				placeholder="用户名" required autofocus> <input type="password"
 				class="form-control" name="j_password" placeholder="密码" required>
-			<br />
+			<div class="checkbox">
+				<label> <input id="_spring_security_remember_me"
+					name="_spring_security_remember_me" type="checkbox"
+					value="remember-me"> 记住我
+				</label>
+			</div>
 			<button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
 		</form>
 	</div>

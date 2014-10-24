@@ -51,10 +51,11 @@
 			method="post">
 			<h2 class="form-signin-heading">注册</h2>
 			<input type="text" class="form-control" name="j_username"
-				placeholder="用户名" required autofocus> <input type="password"
-				class="form-control" name="j_password" placeholder="密码" required>
-			<input type="password" class="form-control" name="j_password_rep"
-				placeholder="重复密码" required>
+				placeholder="用户名" vlaue="${j_username}" required autofocus>
+			<input type="password" class="form-control" name="j_password"
+				placeholder="密码" vlaue="${j_password}" required> <input
+				type="password" class="form-control" name="j_password_rep"
+				vlaue="${j_password_rep}" placeholder="重复密码" required>
 			<div class="input-group">
 				<img src="captcha-image" id="kaptchaImage"
 					style="margin-bottom: -3px" />
