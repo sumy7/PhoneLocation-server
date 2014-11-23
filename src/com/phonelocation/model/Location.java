@@ -10,67 +10,73 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+/**
+ * Phone的位置信息实体（数据库用）
+ * 
+ * @author sumy
+ *
+ */
 @Entity
 @Table(name = "iphone")
 public class Location {
 
-	@Id
-	private String phoneid;
-	private double x;
-	private double y;
-	private double radius;
-	private long date;
+    @Id
+    private String phoneid;
+    private double x;
+    private double y;
+    private double radius;
+    private long date;
 
-	@ManyToMany
-	@JoinTable(name = "usersphone", joinColumns = { @JoinColumn(name = "phonename", referencedColumnName = "phoneid") }, inverseJoinColumns = { @JoinColumn(name = "username") })
-	private Set<Users> users = new HashSet<Users>();
+    @ManyToMany
+    @JoinTable(name = "usersphone", joinColumns = { @JoinColumn(name = "phonename", referencedColumnName = "phoneid") }, inverseJoinColumns = { @JoinColumn(name = "username") })
+    private Set<Users> users = new HashSet<Users>();
 
-	public String getPhoneid() {
-		return phoneid;
-	}
+    public String getPhoneid() {
+        return phoneid;
+    }
 
-	public void setPhoneid(String phoneid) {
-		this.phoneid = phoneid;
-	}
+    public void setPhoneid(String phoneid) {
+        this.phoneid = phoneid;
+    }
 
-	public double getX() {
-		return x;
-	}
+    public double getX() {
+        return x;
+    }
 
-	public void setX(double x) {
-		this.x = x;
-	}
+    public void setX(double x) {
+        this.x = x;
+    }
 
-	public double getY() {
-		return y;
-	}
+    public double getY() {
+        return y;
+    }
 
-	public void setY(double y) {
-		this.y = y;
-	}
+    public void setY(double y) {
+        this.y = y;
+    }
 
-	public double getRadius() {
-		return radius;
-	}
+    public double getRadius() {
+        return radius;
+    }
 
-	public void setRadius(double radius) {
-		this.radius = radius;
-	}
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
 
-	public long getDate() {
-		return date;
-	}
+    public long getDate() {
+        return date;
+    }
 
-	public void setDate(long date) {
-		this.date = date;
-	}
+    public void setDate(long date) {
+        this.date = date;
+    }
 
-	public Set<Users> getUsers() {
-		return users;
-	}
+    public Set<Users> getUsers() {
+        return users;
+    }
 
-	public void setUsers(Set<Users> users) {
-		this.users = users;
-	}
+    public void setUsers(Set<Users> users) {
+        this.users = users;
+    }
 
 }

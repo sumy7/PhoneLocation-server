@@ -19,34 +19,40 @@ import com.phonelocation.dao.UserDao;
 import com.phonelocation.model.Roles;
 import com.phonelocation.model.Users;
 
+/**
+ * 自定义用户处理服务，处理用户登录，与Spring Security对接
+ * 
+ * @author sumy
+ *
+ */
 @Service
 @Transactional(readOnly = true)
 public class CustomUserDetailsService implements UserDetailsService {
 
-	@Autowired
-	private UserDao userDao;
+    @Autowired
+    private UserDao userDao;
 
-	@Override
-	public UserDetails loadUserByUsername(String username)
-			throws UsernameNotFoundException {
-		Users user = userDao.findUserByUsername(username, true);
-		UserDetails loginuser = null;
-		if (user != null) {
-			loginuser = new User(username, user.getPassword(),
-					user.getEnabled() == 1 ? true : false, true, true, true,
-					findUserAuthorities(user));
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+        Users user = userDao.findUserByUsername(username, true);
+        UserDetails loginuser = null;
+        if (user != null) {
+            loginuser = new User(username, user.getPassword(),
+                    user.getEnabled() == 1 ? true : false, true, true, true,
+                    findUserAuthorities(user));
 
-		}
-		return loginuser;
-	}
+        }
+        return loginuser;
+    }
 
-	private Collection<GrantedAuthority> findUserAuthorities(Users user) {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		Set<Roles> roles = user.getRoles();
-		for (Roles role : roles) {
-			authorities.add(new SimpleGrantedAuthority(role.getRolename()));
-		}
-		return authorities;
-	}
+    private Collection<GrantedAuthority> findUserAuthorities(Users user) {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        Set<Roles> roles = user.getRoles();
+        for (Roles role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getRolename()));
+        }
+        return authorities;
+    }
 
 }

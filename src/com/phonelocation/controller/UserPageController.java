@@ -13,20 +13,30 @@ import org.springframework.web.servlet.ModelAndView;
 import com.phonelocation.dao.LocationDao;
 import com.phonelocation.model.Location;
 
+/**
+ * 控制器：个人信息
+ * 
+ * @author sumy
+ *
+ */
 @Controller
 public class UserPageController {
 
-	@Autowired
-	private LocationDao locationDao;
+    @Autowired
+    private LocationDao locationDao;
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ModelAndView listLocation() {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder
-				.getContext().getAuthentication().getPrincipal();
+    /**
+     * 列出登录用户下的设备
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public ModelAndView listLocation() {
+        // 获取登录用户
+        UserDetails userDetails = (UserDetails) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
 
-		Collection<Location> list = locationDao
-				.findLocationByUsername(userDetails.getUsername());
-		return new ModelAndView("list", "phonelist", list);
-	}
+        Collection<Location> list = locationDao
+                .findLocationByUsername(userDetails.getUsername());
+        return new ModelAndView("list", "phonelist", list);
+    }
 
 }

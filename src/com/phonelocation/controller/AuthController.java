@@ -17,58 +17,68 @@ import com.phonelocation.model.Token;
 import com.phonelocation.model.Users;
 import com.phonelocation.repository.TokenRepository;
 
+/**
+ * 控制器：认证处理
+ * 
+ * @author sumy
+ *
+ */
 @Controller
 public class AuthController {
 
-	public final static long DEADLINE_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
-	public final static long DEADLINE_TEN_MINIES = 1000 * 60 * 10;
+    // 过期时间
+    public final static long DEADLINE_ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
+    public final static long DEADLINE_TEN_MINIES = 1000 * 60 * 10;
 
-	@Autowired
-	private TokenRepository tokenRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
 
-	@Autowired
-	private UserDao userDao;
+    @Autowired
+    private UserDao userDao;
 
-	@Autowired
-	private LocationDao locationDao;
+    @Autowired
+    private LocationDao locationDao;
 
-	@RequestMapping(value = "/auth", method = RequestMethod.POST)
-	public @ResponseBody Token auth(@RequestParam("username") String username,
-			@RequestParam("password") String password,
-			@RequestParam("name") String name, HttpServletRequest request,
-			HttpServletResponse response) {
+    /**
+     * 认证用户名和密码，认证成功则返回Token
+     */
+    @RequestMapping(value = "/auth", method = RequestMethod.POST)
+    public @ResponseBody Token auth(@RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("name") String name, HttpServletRequest request,
+            HttpServletResponse response) {
 
-		System.out.println("username:" + username + " password:" + password
-				+ " phonename:" + name);
+        // 通过用户名查找用户并检查
+        Users user = userDao.findUserByUsername(username, false);
+        if (user == null || !user.getPassword().equals(password)) {
+            try {
+                // 用户检查错误，返回404
+                response.sendError(404);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
-		Users user = userDao.findUserByUsername(username, false);
-		if (user == null || !user.getPassword().equals(password)) {
-			try {
-				System.out.println("hehe");
-				response.sendError(404);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
+        // 创建一个默认的Token
+        String tokenid = "";
+        Token token = new Token(name, tokenid, System.currentTimeMillis()
+                + DEADLINE_TEN_MINIES);
 
-		String tokenid = "";
-		Token token = new Token(name, tokenid, System.currentTimeMillis()
-				+ DEADLINE_TEN_MINIES);
+        // 将Phone添加到认证的用户下
+        Location iphone = locationDao.findLocationByPhoneid(name);
+        if (iphone == null) {
+            iphone = new Location();
+            iphone.setPhoneid(name);
+            locationDao.saveOrUpdate(iphone);
+        }
+        user.getPhones().add(iphone);
+        userDao.saveOrUpdate(user);
 
-		Location iphone = locationDao.findLocationByPhoneid(name);
-		if (iphone == null) {
-			iphone = new Location();
-			iphone.setPhoneid(name);
-			locationDao.saveOrUpdate(iphone);
-		}
-		user.getPhones().add(iphone);
-		userDao.saveOrUpdate(user);
+        // 补全TokenID并将Token保存到仓库中
+        token = tokenRepository.insert(token);
 
-		token = tokenRepository.insert(token);
-		System.out.println("New Token:" + token.getOwner() + " <--> "
-				+ token.getTokenid());
-		return token;
-	}
+        return token;
+    }
 
 }

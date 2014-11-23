@@ -17,6 +17,7 @@
 		<b:property name="basename" value="classpath:messages_zh_CN" />
 	</b:bean>
 
+	<!-- 自定义认证器 -->
 	<b:bean id="customUserDetailsService" class="com.phonelocation.service.CustomUserDetailsService" />
 
 	<!-- 对以下不使用安全验证 -->
@@ -47,13 +48,16 @@
 		<form-login login-page="/login.jsp" default-target-url="/index.jsp"
 			authentication-failure-url="/login.jsp?error=true" />
 
+		<!-- 按理应该能启用RememberMe功能，但是却没有！！！ -->
 		<remember-me data-source-ref="dataSource"
 			token-validity-seconds="1209600" remember-me-parameter="remember-me" />
+		<!-- 登出页面配置 -->
 		<logout invalidate-session="true" logout-success-url="/"
 			logout-url="/logout" />
 
 	</http>
 
+	<!-- 自定义认证器配置 -->
 	<authentication-manager erase-credentials="false">
 		<authentication-provider user-service-ref="customUserDetailsService">
 			<password-encoder hash="plaintext">

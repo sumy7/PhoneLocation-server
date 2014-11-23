@@ -16,70 +16,83 @@ import com.phonelocation.dao.UserDao;
 import com.phonelocation.model.Roles;
 import com.phonelocation.model.Users;
 
+/**
+ * æ§åˆ¶å™¨ï¼šç”¨æˆ·æ§åˆ¶
+ * 
+ * @author sumy
+ *
+ */
 @Controller
 public class UserController {
 
-	@Autowired
-	private UserDao userDao;
+    @Autowired
+    private UserDao userDao;
 
-	@Autowired
-	private RolesDao rolesDao;
+    @Autowired
+    private RolesDao rolesDao;
 
-	@RequestMapping(value = "/register.do", method = RequestMethod.GET)
-	public String toRegister() {
-		return "register";
-	}
+    /**
+     * è·³è½¬åˆ°register.jsp
+     */
+    @RequestMapping(value = "/register.do", method = RequestMethod.GET)
+    public String toRegister() {
+        return "register";
+    }
 
-	@RequestMapping(value = "/register.do", method = RequestMethod.POST)
-	public ModelAndView register(String j_username, String j_password,
-			String j_password_rep, String j_code, HttpServletRequest request,
-			HttpServletResponse response) {
-		HttpSession session = request.getSession();
-		String code = (String) session
-				.getAttribute(Constants.KAPTCHA_SESSION_KEY);
-		ModelAndView mv = new ModelAndView("register");
-		if (!code.equals(j_code)) {
-			mv.addObject("msgtype", "info");
-			mv.addObject("msgret", "ÑéÖ¤Âë²»Æ¥Åä");
-			mv.addObject("j_username", j_username);
-			mv.addObject("j_password", j_password);
-			mv.addObject("j_password_rep", j_password_rep);
-			System.out.println(code + " " + j_code + " ÑéÖ¤Âë²»Æ¥Åä");
-			return mv;
-		}
-		if (j_username.equals("") || j_password.equals("")
-				|| j_password_rep.equals("")) {
-			mv.addObject("msgtype", "warning");
-			mv.addObject("msgret", "±íµ¥ÌîĞ´²»ÍêÕû");
-			System.out.println("ÃÜÂëÎª¿Õ");
-			return mv;
-		}
-		if (!j_password.equals(j_password_rep)) {
-			mv.addObject("msgtype", "warning");
-			mv.addObject("msgret", "Á½´ÎÃÜÂë²»Æ¥Åä");
-			System.out.println("Á½´ÎÃÜÂë²»Í¬");
-			return mv;
-		}
-		Users user = userDao.findUserByUsername(j_username, true);
-		if (user != null) {
-			mv.addObject("msgtype", "danger");
-			mv.addObject("msgret", "ÓÃ»§ÒÑ´æÔÚ");
-			System.out.println("ÓÃ»§ÒÑ´æÔÚ" + j_username + " " + user.getUsername());
-			return mv;
-		}
+    /**
+     * å¤„ç†æ³¨å†Œä¿¡æ¯
+     */
+    @RequestMapping(value = "/register.do", method = RequestMethod.POST)
+    public ModelAndView register(String j_username, String j_password,
+            String j_password_rep, String j_code, HttpServletRequest request,
+            HttpServletResponse response) {
 
-		user = new Users(j_username, j_password, 1);
-		user.setUsername(j_username);
-		user.setPassword(j_password);
-		user.setEnabled(1);
-		user.getRoles().add(rolesDao.findRolesByRolename(Roles.ROLE_USER));
+        HttpSession session = request.getSession();
 
-		userDao.saveOrUpdate(user);
+        // æ£€æŸ¥éªŒè¯ç 
+        String code = (String) session
+                .getAttribute(Constants.KAPTCHA_SESSION_KEY);
+        ModelAndView mv = new ModelAndView("register");
+        if (!code.equals(j_code)) {
+            mv.addObject("msgtype", "info");
+            mv.addObject("msgret", "éªŒè¯ç ä¸åŒ¹é…");
+            mv.addObject("j_username", j_username);
+            mv.addObject("j_password", j_password);
+            mv.addObject("j_password_rep", j_password_rep);
+            return mv;
+        }
+        // æ£€æŸ¥è¡¨å•ä¿¡æ¯
+        if (j_username.equals("") || j_password.equals("")
+                || j_password_rep.equals("")) {
+            mv.addObject("msgtype", "warning");
+            mv.addObject("msgret", "è¡¨å•å¡«å†™ä¸å®Œæ•´");
+            return mv;
+        }
+        if (!j_password.equals(j_password_rep)) {
+            mv.addObject("msgtype", "warning");
+            mv.addObject("msgret", "ä¸¤æ¬¡å¯†ç ä¸åŒ¹é…");
+            return mv;
+        }
+        // æ£€æŸ¥ç”¨æˆ·å
+        Users user = userDao.findUserByUsername(j_username, true);
+        if (user != null) {
+            mv.addObject("msgtype", "danger");
+            mv.addObject("msgret", "ç”¨æˆ·å·²å­˜åœ¨");
+            return mv;
+        }
 
-		System.out.println("ĞÂ½¨ÓÃ»§");
-		mv.setViewName("login");
-		mv.addObject("msgtype", "success");
-		mv.addObject("msgret", j_username + " ÓÃ»§×¢²á³É¹¦");
-		return mv;
-	}
+        // æ–°å»ºç”¨æˆ·
+        user = new Users(j_username, j_password, 1);
+        user.setUsername(j_username);
+        user.setPassword(j_password);
+        user.setEnabled(1);
+        user.getRoles().add(rolesDao.findRolesByRolename(Roles.ROLE_USER));// ä¸ºç”¨æˆ·æ·»åŠ é»˜è®¤æƒé™
+        userDao.saveOrUpdate(user);
+
+        // è·³è½¬ç›®æ ‡
+        mv.setViewName("login");
+        mv.addObject("msgtype", "success");
+        mv.addObject("msgret", j_username + " ç”¨æˆ·æ³¨å†ŒæˆåŠŸ");
+        return mv;
+    }
 }

@@ -15,12 +15,21 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd   
       ">
 
+	<!-- 启用事务标签 -->
 	<tx:annotation-driven />
+
+	<!-- 启用Context标签 -->
+	<context:annotation-config />
+
+	<!-- 配置Bean搜索位置 -->
+	<context:component-scan base-package="com.phonelocation"></context:component-scan>
+
+	<!-- Hibernate事务管理 -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<context:annotation-config />
+
 
 	<!-- 配置数据源 -->
 	<bean id="dataSource"
@@ -32,10 +41,12 @@
 			value="jdbc:mysql://localhost:3306/phonelocation?useUnicode=true&amp;characterEncoding=utf8" />
 	</bean>
 
+	<!-- 配置Hibernate事务管理 -->
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 
+		<!-- 数据库实体映射搜索位置 -->
 		<property name="packagesToScan">
 			<list>
 				<value>com.phonelocation</value>
@@ -58,8 +69,6 @@
 		<aop:pointcut id="serviceOperation" expression="execution(* com.phonelocation.*.*(..))" />
 		<aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
 	</aop:config>
-
-
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 			<tx:method name="del*" propagation="REQUIRED" />
@@ -71,8 +80,6 @@
 			<tx:method name="*" />
 		</tx:attributes>
 	</tx:advice>
-
-	<context:component-scan base-package="com.phonelocation"></context:component-scan>
 
 	<!-- 验证码生成 -->
 	<bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
@@ -95,6 +102,7 @@
 		</property>
 	</bean>
 
+	<!-- 配置View前缀和后缀 -->
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix">
@@ -105,12 +113,14 @@
 		</property>
 	</bean>
 
+	<!-- 不对以下资源进行Controller匹配 -->
 	<mvc:resources location="/css/" mapping="/css/**" />
 	<mvc:resources location="/js/" mapping="/js/**" />
 	<mvc:resources location="/fonts/" mapping="/fonts/**" />
 	<mvc:resources location="/img/" mapping="/img/**" />
 	<mvc:resources location="/phonelocation.apk" mapping="/phonelocation.apk" />
 
+	<!-- Spring拦截器 -->
 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter" />

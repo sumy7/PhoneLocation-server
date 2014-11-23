@@ -21,65 +21,80 @@ import com.phonelocation.model.Location;
 import com.phonelocation.model.Token;
 import com.phonelocation.repository.TokenRepository;
 
+/**
+ * 控制器：Phone位置处理
+ * 
+ * @author sumy
+ *
+ */
 @Controller
 public class PhoneLocationController {
 
-	@Autowired
-	private LocationDao locationDao;
+    @Autowired
+    private LocationDao locationDao;
 
-	@Autowired
-	private TokenRepository tokenRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
 
-	@RequestMapping(value = "/find/{name}", method = RequestMethod.GET)
-	public @ResponseBody IPhone findPhone(@PathVariable("name") String name) {
-		return new IPhone(locationDao.findLocationByPhoneid(name));
-	}
+    /**
+     * 更新位置信息。需认证。
+     */
+    @RequestMapping(value = "/phone", method = RequestMethod.POST)
+    public @ResponseBody IPhone updates(@RequestBody IPhone location,
+            @RequestHeader("tokenid") String tokenId,
+            HttpServletResponse response) {
 
-	@RequestMapping(value = "/phone", method = RequestMethod.POST)
-	public @ResponseBody IPhone updates(@RequestBody IPhone location,
-			@RequestHeader("tokenid") String tokenId,
-			HttpServletResponse response) {
-		System.out.println(location.getName() + location.getX()
-				+ location.getY() + " tokenid:" + tokenId);
-		Token token = tokenRepository.findByTokenId(tokenId);
-		System.out.println(token);
-		if (token == null || !token.getOwner().equals(location.getName())
-				|| System.currentTimeMillis() > token.getDeadline()) {
-			try {
-				System.out.println("haha");
-				response.sendError(401);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		Location iPhone = locationDao.findLocationByPhoneid(location.getName());
-		if (iPhone == null) {
-			iPhone = new Location();
-			iPhone.setPhoneid(location.getName());
-		}
-		iPhone.setX(location.getX());
-		iPhone.setY(location.getY());
-		iPhone.setRadius(location.getRadius());
-		iPhone.setDate(location.getDate());
-		locationDao.saveOrUpdate(iPhone);
-		response.setStatus(200);
-		return location;
-	}
+        // 查找并检查提供的TokenID
+        Token token = tokenRepository.findByTokenId(tokenId);
+        if (token == null || !token.getOwner().equals(location.getName())
+                || System.currentTimeMillis() > token.getDeadline()) {
+            try {
+                // 检查失败（未认证、不匹配、过期），返回401
+                response.sendError(401);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
-	@RequestMapping(value = "/show/{name}", method = RequestMethod.GET)
-	public String showlocation(@PathVariable("name") String name, ModelMap model) {
-		Location location = locationDao.findLocationByPhoneid(name);
-		if (location == null) {
-			return "error";
-		}
-		model.addAttribute("x", location.getX());
-		model.addAttribute("y", location.getY());
-		model.addAttribute("radius", location.getRadius());
-		model.addAttribute("labeltext", location.getPhoneid());
-		model.addAttribute("titletext", new Date(location.getDate()).toString());
+        // 更新位置信息
+        Location iPhone = locationDao.findLocationByPhoneid(location.getName());
+        if (iPhone == null) {
+            iPhone = new Location();
+            iPhone.setPhoneid(location.getName());
+        }
+        iPhone.setX(location.getX());
+        iPhone.setY(location.getY());
+        iPhone.setRadius(location.getRadius());
+        iPhone.setDate(location.getDate());
+        locationDao.saveOrUpdate(iPhone);
+        response.setStatus(200);
+        return location;
+    }
 
-		return "show";
-	}
+    /**
+     * 使用地图显示{name}的位置信息（测试用）
+     */
+    @RequestMapping(value = "/show/{name}", method = RequestMethod.GET)
+    public String showlocation(@PathVariable("name") String name, ModelMap model) {
+        Location location = locationDao.findLocationByPhoneid(name);
+        if (location == null) {
+            return "error";
+        }
+        model.addAttribute("x", location.getX());
+        model.addAttribute("y", location.getY());
+        model.addAttribute("radius", location.getRadius());
+        model.addAttribute("labeltext", location.getPhoneid());
+        model.addAttribute("titletext", new Date(location.getDate()).toString());
 
+        return "show";
+    }
+
+    /**
+     * 通过{name}查找位置信息（测试用）
+     */
+    @RequestMapping(value = "/find/{name}", method = RequestMethod.GET)
+    public @ResponseBody IPhone findPhone(@PathVariable("name") String name) {
+        return new IPhone(locationDao.findLocationByPhoneid(name));
+    }
 }
